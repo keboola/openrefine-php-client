@@ -1,0 +1,31 @@
+version: "2"
+
+services:
+
+  tests:
+    build: .
+    volumes:
+      - .:/code
+    working_dir: /code
+    command: sh -c 'composer install -n && php ./vendor/bin/phpunit'
+    tty: true
+    stdin_open: true
+    links:
+      - openrefine
+    environment:
+      - OPENREFINE_HOST=openrefine
+      - OPENREFINE_PORT=3333
+
+  openrefine:
+    build: ./docker/openrefine
+    ports:
+      - "3333:3333"
+    command: /app/OpenRefine-2.6-rc.2/refine -i 0.0.0.0
+
+  cli:
+    build: .
+    volumes:
+      - .:/code
+    working_dir: /code
+    tty: true
+    stdin_open: true

@@ -1,0 +1,19 @@
+{
+  "name": "keboola/processor-last-file",
+  "license": "MIT",
+  "type": "project",
+  "require": {
+    "php": "~7.0",
+    "guzzlehttp/guzzle": "~6.2.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~5.4",
+    "codeclimate/php-test-reporter": "dev-master",
+    "squizlabs/php_codesniffer": "^2.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "Keboola\\": "src/Keboola/"
+    }
+  }
+}
