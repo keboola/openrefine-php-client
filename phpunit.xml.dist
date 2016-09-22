@@ -9,6 +9,6 @@
          syntaxCheck="false"
          bootstrap="tests/bootstrap.php">
     <testsuite name="OpenRefine PHP Client Test Suite">
-        <directory>./tests</directory>
+        <directory>./tests/Keboola/OpenRefine</directory>
     </testsuite>
 </phpunit>

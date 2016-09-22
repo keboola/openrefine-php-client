@@ -3,6 +3,7 @@ FROM php:7
 RUN apt-get update && apt-get install -y \
         git \
         unzip \
+        wget \
    --no-install-recommends && rm -r /var/lib/apt/lists/*
 
 RUN curl -sS https://getcomposer.org/installer | php \
