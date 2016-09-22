@@ -66,6 +66,26 @@ class Client
 
     /**
      * @param $projectId
+     * @param $operations
+     * @throws Exception
+     */
+    public function applyOperations($projectId, $operations)
+    {
+        $response = $this->client->request("POST", "apply-operations", [
+            "form_params" => [
+                "project" => $projectId,
+                "operations" => json_encode($operations)
+            ]
+        ]);
+
+        if ($response->getStatusCode() !== 200) {
+            // Actually never managed to get here
+            throw new Exception("Cannot apply operations: ({$response->getStatusCode()}) {$response->getBody()}");
+        }
+    }
+
+    /**
+     * @param $projectId
      * @param $fileName
      * @throws Exception
      */

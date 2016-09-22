@@ -27,7 +27,7 @@ class CreateProjectTest extends \PHPUnit_Framework_TestCase
         $this->assertGreaterThan(0, $projectId);
         $outFileInfo = $temp->createFile("out.csv");
         $client->exportRowsToCsv($projectId, $outFileInfo->getPathname());
-        $this->assertEquals("\"col1\",\"col2\"\n\"A\",\"B\"\n",file_get_contents($fileInfo = $temp->createFile("file.csv")));
+        $this->assertEquals("col1,col2\nA,B\n",file_get_contents($outFileInfo->getPathname()));
     }
 
     public function testsCreateProjectEmptyFile()
