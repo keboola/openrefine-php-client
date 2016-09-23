@@ -108,4 +108,25 @@ class Client
         }
         fclose($fh);
     }
+    /**
+     * @param $projectId
+     * @throws Exception
+     */
+    public function deleteProject($projectId)
+    {
+        $response = $this->client->request("POST", "delete-project", [
+            "form_params" => [
+                "project" => $projectId
+            ]
+        ]);
+
+        if ($response->getStatusCode() !== 200) {
+            // Actually never managed to get here
+            throw new Exception("Cannot delete project: ({$response->getStatusCode()}) {$response->getBody()}");
+        }
+        $decodedResponse = json_decode($response->getBody()->__toString(), true);
+        if ($decodedResponse["status"] == "error") {
+            throw new Exception("Cannot delete project: {$decodedResponse["message"]}");
+        }
+    }
 }
