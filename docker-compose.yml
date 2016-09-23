@@ -27,7 +27,7 @@ services:
     volumes:
       - .:/code
     working_dir: /code
-    command: sh -c 'composer install -n && php ./vendor/bin/phpunit && ./vendor/bin/test-reporter && apigen generate -d ./docs/ -s ./src/'
+    command: sh -c 'composer install -n && php ./vendor/bin/phpunit && ./vendor/bin/test-reporter && ./deploy-docs.sh'
     tty: true
     stdin_open: true
     links:
@@ -35,3 +35,7 @@ services:
     environment:
       - OPENREFINE_HOST=openrefine
       - OPENREFINE_PORT=3333
+      - GITHUB_GHPAGES_COMMIT_EMAIL
+      - GITHUB_GHPAGES_COMMIT_NAME
+      - GITHUB_TOKEN
+      - GITHUB_REPO
