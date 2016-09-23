@@ -25,7 +25,6 @@ script:
     -e GITHUB_TOKEN=$GITHUB_TOKEN
     -e GITHUB_REPO=$GITHUB_REPO
     tests-coverage-report
-    && curl -XPOST -H'content-type:application/json' 'https://packagist.org/api/update-package?username=Keboola&apiToken=$PACKAGIST_API_TOKEN' -d'{"repository":{"url":"$PACKAGIST_PACKAGE_URL"}}'
 after_success:
   - docker images
   - ./deploy-docs.sh
