@@ -1,0 +1,21 @@
+---
+engines:
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - php
+  fixme:
+    enabled: true
+  phpmd:
+    enabled: true
+  phpcodesniffer:
+    enabled: true
+ratings:
+  paths:
+    - "src/**"
+exclude_paths:
+  - tests/
+  - vendor/
+  - .git/
+  - .idea/

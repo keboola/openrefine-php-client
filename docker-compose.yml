@@ -22,10 +22,16 @@ services:
       - "3333:3333"
     command: /app/OpenRefine-2.6-rc.2/refine -i 0.0.0.0
 
-  cli:
+  tests-coverage-report:
     build: .
     volumes:
       - .:/code
     working_dir: /code
+    command: sh -c 'composer install -n && php ./vendor/bin/phpunit && ./vendor/bin/test-reporter'
     tty: true
     stdin_open: true
+    links:
+      - openrefine
+    environment:
+      - OPENREFINE_HOST=openrefine
+      - OPENREFINE_PORT=3333

@@ -11,4 +11,12 @@
     <testsuite name="OpenRefine PHP Client Test Suite">
         <directory>./tests/Keboola/OpenRefine</directory>
     </testsuite>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./src/Keboola/OpenRefine</directory>
+        </whitelist>
+    </filter>
+    <logging>
+        <log type="coverage-clover" target="build/logs/clover.xml"/>
+    </logging>
 </phpunit>
