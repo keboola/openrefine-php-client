@@ -15,7 +15,7 @@ class Client
     /**
      * @var \GuzzleHttp\Client
      */
-    var $client;
+    protected $client;
 
     /**
      * Client constructor.
@@ -82,6 +82,10 @@ class Client
             // Actually never managed to get here
             throw new Exception("Cannot apply operations: ({$response->getStatusCode()}) {$response->getBody()}");
         }
+        $decodedResponse = json_decode($response->getBody()->__toString(), true);
+        if ($decodedResponse["status"] == "error") {
+            throw new Exception("Cannot apply operations: {$decodedResponse["message"]}");
+        }
     }
 
     /**
@@ -100,9 +104,10 @@ class Client
         if ($response->getStatusCode() !== 200) {
             throw new Exception("Cannot export rows: ({$response->getStatusCode()}) {$response->getBody()}");
         }
+
         $fh = fopen($fileName, "w");
         $buffer = $response->getBody()->read(1000);
-        while($buffer != '') {
+        while ($buffer != '') {
             fwrite($fh, $buffer);
             $buffer = $response->getBody()->read(1000);
         }
