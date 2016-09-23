@@ -22,5 +22,6 @@ script:
     && curl -XPOST -H'content-type:application/json' 'https://packagist.org/api/update-package?username=Keboola&apiToken=$PACKAGIST_API_TOKEN' -d'{"repository":{"url":"$PACKAGIST_PACKAGE_URL"}}'
 after_success:
   - docker images
+  - ./deploy-docs.sh
 notifications:
   slack: keboola:hDCSoKFw77r0k7cJ8LkzoK5p

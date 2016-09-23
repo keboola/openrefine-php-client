@@ -12,6 +12,11 @@ RUN pecl install xdebug \
 RUN curl -sS https://getcomposer.org/installer | php \
   && mv ./composer.phar /usr/local/bin/composer
 
+RUN wget http://apigen.org/apigen.phar \
+    && chmod +x apigen.phar \
+    && mv apigen.phar /usr/local/bin/apigen \
+    && apigen --version
+
 COPY ./docker/php/php.ini /usr/local/etc/php/php.ini
 COPY . /code
 
