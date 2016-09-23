@@ -1,10 +1,7 @@
 #!/bin/bash
 
-# generate docs
-apigen generate -d /docs/ -s ./src/
-
 # deploy
-cd /docs
+cd ./docs
 git init
 git add .
 git config --global user.email "$GITHUB_GHPAGES_COMMIT_EMAIL"
