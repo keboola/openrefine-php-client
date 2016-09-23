@@ -108,6 +108,22 @@ class Client
         }
         fclose($fh);
     }
+
+    /**
+     * @param $projectId
+     * @return mixed
+     * @throws Exception
+     */
+    public function getProjectMetadata($projectId)
+    {
+        $response = $this->client->request("GET", "get-project-metadata?project={$projectId}");
+        $decodedResponse = json_decode($response->getBody()->__toString(), true);
+        if ($decodedResponse["status"] == "error") {
+            throw new Exception("Project not found: {$decodedResponse["message"]}");
+        }
+        return $decodedResponse;
+    }
+
     /**
      * @param $projectId
      * @throws Exception
