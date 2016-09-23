@@ -13,7 +13,7 @@ Build and tested with OpenRefine 2.6 RC2, distributed via [Packagist](https://pa
 
 ## API
 
-
+API documentatio is deployed [here](https://keboola.github.io/openrefine-php-client/class-Keboola.OpenRefine.Client.html).
 
 ## Development
 
