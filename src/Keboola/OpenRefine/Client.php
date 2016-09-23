@@ -46,7 +46,7 @@ class Client
             "multipart" => [
                 [
                     "name" => "project-file",
-                    "contents" => fopen($file->getFilename(), "r"),
+                    "contents" => fopen($file->getPathname(), "r"),
                 ],
                 [
                     "name" => "project-name",
