@@ -16,7 +16,7 @@ before_script:
   - docker -v
   - docker-compose -v
   - docker-compose build
-script: docker-compose run tests-coverage-report
+script: docker-compose run --rm -e CODECLIMATE_REPO_TOKEN=$CODECLIMATE_REPO_TOKEN tests-coverage-report
 after_success:
   - docker images
 notifications:
