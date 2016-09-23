@@ -1,5 +1,5 @@
 {
-  "name": "keboola/processor-last-file",
+  "name": "keboola/openrefine-php-client",
   "license": "MIT",
   "type": "project",
   "require": {
