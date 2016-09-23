@@ -105,13 +105,13 @@ class Client
             throw new Exception("Cannot export rows: ({$response->getStatusCode()}) {$response->getBody()}");
         }
 
-        $fh = fopen($fileName, "w");
+        $handle = fopen($fileName, "w");
         $buffer = $response->getBody()->read(1000);
         while ($buffer != '') {
-            fwrite($fh, $buffer);
+            fwrite($handle, $buffer);
             $buffer = $response->getBody()->read(1000);
         }
-        fclose($fh);
+        fclose($handle);
     }
 
     /**
