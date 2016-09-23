@@ -16,7 +16,10 @@ before_script:
   - docker -v
   - docker-compose -v
   - docker-compose build
-script: docker-compose run --rm -e CODECLIMATE_REPO_TOKEN=$CODECLIMATE_REPO_TOKEN tests-coverage-report
+script:
+  - >
+    docker-compose run --rm -e CODECLIMATE_REPO_TOKEN=$CODECLIMATE_REPO_TOKEN tests-coverage-report
+    && curl -XPOST -H'content-type:application/json' 'https://packagist.org/api/update-package?username=Keboola&apiToken=$PACKAGIST_API_TOKEN' -d'{"repository":{"url":"$PACKAGIST_PACKAGE_URL"}}'
 after_success:
   - docker images
 notifications:
