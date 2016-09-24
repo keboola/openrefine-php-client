@@ -6,7 +6,7 @@ before_script:
   - docker -v
   - docker-compose -v
   - docker-compose build
-script: docker-compose run --rm tests-coverage-report composer install -n && sleep 30 && php ./vendor/bin/phpunit
+script: docker-compose run --rm tests-coverage-report sh -c 'composer install -n && sleep 30 && php ./vendor/bin/phpunit'
 after_success:
   - docker images
 deploy:
