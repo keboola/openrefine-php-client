@@ -35,3 +35,8 @@ services:
     environment:
       - OPENREFINE_HOST=openrefine
       - OPENREFINE_PORT=3333
+      - CODECLIMATE_REPO_TOKEN
+      - GITHUB_TOKEN
+      - GITHUB_REPO
+      - GITHUB_GHPAGES_COMMIT_EMAIL
+      - GITHUB_GHPAGES_COMMIT_NAME
