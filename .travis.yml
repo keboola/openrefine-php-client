@@ -17,6 +17,11 @@ script:
     tests-coverage-report
 after_success:
   - docker images
-  - ./deploy-docs.sh
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: ./deploy-docs.sh
+  on:
+    tags: true
 notifications:
   slack: keboola:hDCSoKFw77r0k7cJ8LkzoK5p
