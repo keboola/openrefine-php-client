@@ -92,8 +92,16 @@ class Client
             throw new Exception("Cannot apply operations: ({$response->getStatusCode()}) {$response->getBody()}");
         }
         $decodedResponse = json_decode($response->getBody()->__toString(), true);
-        if ($decodedResponse["status"] == "error") {
-            throw new Exception("Cannot apply operations: {$decodedResponse["message"]}");
+        if (isset($decodedResponse["status"]) && $decodedResponse["status"] == "error" ||
+            isset($decodedResponse["code"]) && $decodedResponse["code"] == "error"
+        ) {
+            if (isset($decodedResponse["status"])) {
+                $message = $decodedResponse["status"];
+            }
+            if (isset($decodedResponse["code"])) {
+                $message = $decodedResponse["code"];
+            }
+            throw new Exception("Cannot apply operations: {$message}");
         }
     }
 
@@ -134,8 +142,16 @@ class Client
     {
         $response = $this->client->request("GET", "get-project-metadata?project={$projectId}");
         $decodedResponse = json_decode($response->getBody()->__toString(), true);
-        if ($decodedResponse["status"] == "error") {
-            throw new Exception("Project not found: {$decodedResponse["message"]}");
+        if (isset($decodedResponse["status"]) && $decodedResponse["status"] == "error" ||
+            isset($decodedResponse["code"]) && $decodedResponse["code"] == "error"
+        ) {
+            if (isset($decodedResponse["status"])) {
+                $message = $decodedResponse["status"];
+            }
+            if (isset($decodedResponse["code"])) {
+                $message = $decodedResponse["code"];
+            }
+            throw new Exception("Project not found: {$message}");
         }
         return $decodedResponse;
     }
@@ -157,8 +173,16 @@ class Client
             throw new Exception("Cannot delete project: ({$response->getStatusCode()}) {$response->getBody()}");
         }
         $decodedResponse = json_decode($response->getBody()->__toString(), true);
-        if ($decodedResponse["status"] == "error") {
-            throw new Exception("Cannot delete project: {$decodedResponse["message"]}");
+        if (isset($decodedResponse["status"]) && $decodedResponse["status"] == "error" ||
+            isset($decodedResponse["code"]) && $decodedResponse["code"] == "error"
+        ) {
+            if (isset($decodedResponse["status"])) {
+                $message = $decodedResponse["status"];
+            }
+            if (isset($decodedResponse["code"])) {
+                $message = $decodedResponse["code"];
+            }
+            throw new Exception("Cannot delete project: {$message}");
         }
     }
 }
