@@ -49,9 +49,7 @@ class ApplyOperationsTest extends \PHPUnit_Framework_TestCase
 JSON;
 
         $client->applyOperations($projectId, json_decode($operationsJSON, true));
-
-        $outFileInfo = $temp->createFile("out.csv");
-        $client->exportRowsToCsv($projectId, $outFileInfo->getPathname());
-        $this->assertEquals("col1,col2\nA,A\n", file_get_contents($outFileInfo->getPathname()));
+        $outCsv = $client->exportRowsToCsv($projectId);
+        $this->assertEquals("col1,col2\nA,A\n", file_get_contents($outCsv->getPathname()));
     }
 }

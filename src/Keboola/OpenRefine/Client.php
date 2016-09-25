@@ -9,6 +9,7 @@
 namespace Keboola\OpenRefine;
 
 use Keboola\Csv\CsvFile;
+use Keboola\Temp\Temp;
 
 class Client
 {
@@ -16,6 +17,10 @@ class Client
      * @var \GuzzleHttp\Client
      */
     protected $client;
+    /**
+     * @var Temp
+     */
+    protected $temp;
 
     /**
      * Client constructor.
@@ -23,11 +28,15 @@ class Client
      * @param string $host
      * @param int $port
      */
-    public function __construct($host = "localhost", $port = 3333)
+    public function __construct($host = "localhost", $port = 3333, $temp = null)
     {
         $this->client = new \GuzzleHttp\Client([
             "base_uri" => "http://" . $host . ":" . $port . "/command/core/"
         ]);
+        if (!$temp) {
+            $temp = new Temp();
+        }
+        $this->temp = $temp;
     }
 
     /**
@@ -90,10 +99,10 @@ class Client
 
     /**
      * @param $projectId
-     * @param $fileName
+     * @return CsvFile
      * @throws Exception
      */
-    public function exportRowsToCsv($projectId, $fileName)
+    public function exportRowsToCsv($projectId)
     {
         $response = $this->client->request("POST", "export-rows", [
             "form_params" => [
@@ -105,6 +114,7 @@ class Client
             throw new Exception("Cannot export rows: ({$response->getStatusCode()}) {$response->getBody()}");
         }
 
+        $fileName = $this->temp->createFile("data.csv")->getPathname();
         $handle = fopen($fileName, "w");
         $buffer = $response->getBody()->read(1000);
         while ($buffer != '') {
@@ -112,6 +122,7 @@ class Client
             $buffer = $response->getBody()->read(1000);
         }
         fclose($handle);
+        return new CsvFile($fileName);
     }
 
     /**
