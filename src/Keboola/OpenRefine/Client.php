@@ -122,7 +122,7 @@ class Client
             throw new Exception("Cannot export rows: ({$response->getStatusCode()}) {$response->getBody()}");
         }
 
-        $fileName = $this->temp->createFile("data.csv")->getPathname();
+        $fileName = $this->temp->createFile("data.csv", true)->getPathname();
         $handle = fopen($fileName, "w");
         $buffer = $response->getBody()->read(1000);
         while ($buffer != '') {
