@@ -8,6 +8,7 @@
 
 namespace Keboola\OpenRefine;
 
+use GuzzleHttp\Psr7\Response;
 use Keboola\Csv\CsvFile;
 use Keboola\Temp\Temp;
 
@@ -91,17 +92,8 @@ class Client
             // Actually never managed to get here
             throw new Exception("Cannot apply operations: ({$response->getStatusCode()}) {$response->getBody()}");
         }
-        $decodedResponse = json_decode($response->getBody()->__toString(), true);
-        if (isset($decodedResponse["status"]) && $decodedResponse["status"] == "error" ||
-            isset($decodedResponse["code"]) && $decodedResponse["code"] == "error"
-        ) {
-            if (isset($decodedResponse["status"])) {
-                $message = $decodedResponse["status"];
-            }
-            if (isset($decodedResponse["code"])) {
-                $message = $decodedResponse["code"];
-            }
-            throw new Exception("Cannot apply operations: {$message}");
+        if ($this->isResponseError($response)) {
+            throw new Exception("Cannot apply operations: {$this->getResponseError($response)}");
         }
     }
 
@@ -141,18 +133,10 @@ class Client
     public function getProjectMetadata($projectId)
     {
         $response = $this->client->request("GET", "get-project-metadata?project={$projectId}");
-        $decodedResponse = json_decode($response->getBody()->__toString(), true);
-        if (isset($decodedResponse["status"]) && $decodedResponse["status"] == "error" ||
-            isset($decodedResponse["code"]) && $decodedResponse["code"] == "error"
-        ) {
-            if (isset($decodedResponse["status"])) {
-                $message = $decodedResponse["status"];
-            }
-            if (isset($decodedResponse["code"])) {
-                $message = $decodedResponse["code"];
-            }
-            throw new Exception("Project not found: {$message}");
+        if ($this->isResponseError($response)) {
+            throw new Exception("Project not found: {$this->getResponseError($response)}");
         }
+        $decodedResponse = json_decode($response->getBody()->__toString(), true);
         return $decodedResponse;
     }
 
@@ -172,17 +156,38 @@ class Client
             // Actually never managed to get here
             throw new Exception("Cannot delete project: ({$response->getStatusCode()}) {$response->getBody()}");
         }
+        if ($this->isResponseError($response)) {
+            throw new Exception("Cannot delete project: {$this->getResponseError($response)}");
+        }
+    }
+
+    /**
+     * @param Response $response
+     * @return bool
+     */
+    protected function isResponseError(Response $response)
+    {
         $decodedResponse = json_decode($response->getBody()->__toString(), true);
         if (isset($decodedResponse["status"]) && $decodedResponse["status"] == "error" ||
             isset($decodedResponse["code"]) && $decodedResponse["code"] == "error"
         ) {
-            if (isset($decodedResponse["status"])) {
-                $message = $decodedResponse["status"];
-            }
-            if (isset($decodedResponse["code"])) {
-                $message = $decodedResponse["code"];
-            }
-            throw new Exception("Cannot delete project: {$message}");
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param Response $response
+     * @return mixed
+     */
+    protected function getResponseError(Response $response)
+    {
+        $decodedResponse = json_decode($response->getBody()->__toString(), true);
+        if (isset($decodedResponse["status"])) {
+            return $decodedResponse["status"];
+        }
+        if (isset($decodedResponse["code"])) {
+            return $decodedResponse["code"];
         }
     }
 }
