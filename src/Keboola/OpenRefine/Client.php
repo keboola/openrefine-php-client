@@ -73,7 +73,7 @@ class Client
             );
         } catch (ServerException $e) {
             if ($e->getResponse()->getReasonPhrase() == 'GC overhead limit exceeded') {
-                throw new Exception("OpenRefine out of memory. Data set too large.");
+                throw new Exception("OpenRefine is out of memory. Data set too large.");
             }
             throw $e;
         }
@@ -93,12 +93,23 @@ class Client
      */
     public function applyOperations($projectId, $operations)
     {
-        $response = $this->client->request("POST", "apply-operations", [
-            "form_params" => [
-                "project" => $projectId,
-                "operations" => json_encode($operations)
-            ]
-        ]);
+        try {
+            $response = $this->client->request(
+                "POST",
+                "apply-operations",
+                [
+                    "form_params" => [
+                        "project" => $projectId,
+                        "operations" => json_encode($operations)
+                    ]
+                ]
+            );
+        } catch (ServerException $e) {
+            if ($e->getResponse()->getReasonPhrase() == 'GC overhead limit exceeded') {
+                throw new Exception("OpenRefine is out of memory. Data set too large.");
+            }
+            throw $e;
+        }
 
         if ($response->getStatusCode() !== 200) {
             // Actually never managed to get here
