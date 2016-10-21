@@ -8,6 +8,7 @@
 
 namespace Keboola\OpenRefine;
 
+use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Response;
 use Keboola\Csv\CsvFile;
 use Keboola\Temp\Temp;
@@ -52,19 +53,30 @@ class Client
             throw new Exception("Empty file");
         }
 
-        $response = $this->client->request("POST", "create-project-from-upload", [
-            "multipart" => [
+        try {
+            $response = $this->client->request(
+                "POST",
+                "create-project-from-upload",
                 [
-                    "name" => "project-file",
-                    "contents" => fopen($file->getPathname(), "r"),
-                ],
-                [
-                    "name" => "project-name",
-                    "contents" => $name
+                    "multipart" => [
+                        [
+                            "name" => "project-file",
+                            "contents" => fopen($file->getPathname(), "r"),
+                        ],
+                        [
+                            "name" => "project-name",
+                            "contents" => $name
+                        ]
+                    ],
+                    "allow_redirects" => false
                 ]
-            ],
-            "allow_redirects" => false
-        ]);
+            );
+        } catch (ServerException $e) {
+            if ($e->getResponse()->getReasonPhrase() == 'GC overhead limit exceeded') {
+                throw new Exception("OpenRefine out of memory. Data set too large.");
+            }
+            throw $e;
+        }
 
         if ($response->getStatusCode() !== 302) {
             throw new Exception("Cannot create project: {$response->getStatusCode()}");
