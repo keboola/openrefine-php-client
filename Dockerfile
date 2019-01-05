@@ -1,4 +1,4 @@
-FROM php:7
+FROM php:7.2
 
 RUN apt-get update && apt-get install -y \
         git \
@@ -6,16 +6,11 @@ RUN apt-get update && apt-get install -y \
         wget \
    --no-install-recommends && rm -r /var/lib/apt/lists/*
 
-RUN pecl install xdebug \
+RUN pecl install xdebug-2.6.0 \
   && docker-php-ext-enable xdebug
 
 RUN curl -sS https://getcomposer.org/installer | php \
   && mv ./composer.phar /usr/local/bin/composer
-
-RUN wget http://apigen.org/apigen.phar \
-    && chmod +x apigen.phar \
-    && mv apigen.phar /usr/local/bin/apigen \
-    && apigen --version
 
 COPY ./docker/php/php.ini /usr/local/etc/php/php.ini
 COPY . /code
