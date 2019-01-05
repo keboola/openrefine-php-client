@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # generate docs
-./vendor/bin/apigen generate -d $(pwd)/docs/ -s $(pwd)/src/
+$(pwd)/vendor/bin/apigen generate -d $(pwd)/docs/ -s $(pwd)/src/
 
 # deploy
 cd $(pwd)/docs
