@@ -1,6 +1,6 @@
 #!/bin/bash
 # generate docs
-apigen generate -d ../docs/ -s ../src/
+./vendor/bin/apigen generate -d ./docs/ -s ./src/
 
 # deploy
 cd ./docs
