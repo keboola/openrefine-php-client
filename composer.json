@@ -4,7 +4,7 @@
   "type": "project",
   "require": {
     "php": "~7.0",
-    "guzzlehttp/guzzle": "~6.2.1",
+    "guzzlehttp/guzzle": "^6.3",
     "keboola/csv": "~1.1.4",
     "keboola/php-temp": "~0.1.6"
   },
