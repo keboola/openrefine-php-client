@@ -1,15 +1,25 @@
 sudo: required
-language: bash
+
+language: php
+
+php:
+  - 7.3
+  - 7.2
+  - 7.1
+
 services:
   - docker
+
 before_script:
   - docker -v
   - docker-compose -v
   - docker-compose build
-script: docker-compose run --rm tests-coverage-report
-after_success:
-  - docker images
+  - docker-compose up openrefine
+script:
+  - composer ci
 
+after_success:
+  - docker-compose run --rm tests-coverage-report
 
 notifications:
   email: false
@@ -19,12 +29,8 @@ notifications:
 jobs:
   include:
     - stage: docs
-      before_script:
-      - curl -O http://get.sensiolabs.org/sami.phar
       script:
-      - git fetch origin master:master
-      - git fetch origin --tags
-      - php sami.phar update --force .sami-config.php
+        - ./scripts/generate-docs.sh
       deploy:
         provider: pages
         skip-cleanup: true
