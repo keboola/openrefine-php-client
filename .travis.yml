@@ -19,8 +19,6 @@ script:
   - docker-compose up -d openrefine
   - sleep 5
   - composer ci
-
-after_success:
   - docker-compose run --rm tests-coverage-report
 
 notifications:
