@@ -13,8 +13,8 @@ $versions = GitVersionCollection::create($dir)
     ->add('master', 'master branch')
 ;
 return new Sami($iterator, [
-    'title' => 'php-docker-application',
-    'versions'             => $versions,
+    'title' => 'openrefine-php-client',
+    'versions' => $versions,
     'build_dir' => __DIR__ . '/docs/%version%',
     'cache_dir' => __DIR__ . '/cache/%version%',
     'default_opened_level' => 2,
