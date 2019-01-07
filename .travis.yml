@@ -30,12 +30,8 @@ notifications:
 jobs:
   include:
     - stage: docs
-      before_script:
-      - curl -O http://get.sensiolabs.org/sami.phar
       script:
-      - git fetch origin master:master
-      - git fetch origin --tags
-      - php sami.phar update --force .sami-config.php
+      - docker run -it --volume $(pwd)/:/code --rm php:7-cli sh -c 'apt-get update && apt-get install -y git && mkdir /sami && cd /sami && curl -O http://get.sensiolabs.org/sami.phar && cd /code && php /sami/sami.phar update --force /code/.sami-config.php'
       deploy:
         provider: pages
         skip-cleanup: true
