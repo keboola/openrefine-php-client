@@ -29,6 +29,7 @@ class Client
      *
      * @param string $host
      * @param int $port
+     * @param Temp\null $temp
      */
     public function __construct($host = "localhost", $port = 3333, $temp = null)
     {
