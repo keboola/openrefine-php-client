@@ -48,7 +48,3 @@ jobs:
 stages:
   - test
   - docs
-
-cache:
-  directories:
-  - vendor
