@@ -14,7 +14,7 @@ before_script:
   - docker -v
   - docker-compose -v
   - docker-compose build
-  - docker-compose start openrefine
+  - docker-compose up -d openrefine
   - sleep 5
 script:
   - composer ci
