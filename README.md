@@ -27,7 +27,7 @@ Application is prepared for run in container, you can start development same way
 1. Clone this repository: `git clone https://github.com/keboola/openrefine-php-client`
 2. Change directory: `cd openrefine-php-client`
 3. Build services: `docker-compose build`
-4. Run tests `docker-compose run --rm tests` (runs `phpunit` script)
+4. Run tests `docker-compose run --rm dev composer ci`
 
 ## License
 

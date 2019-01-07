@@ -2,12 +2,12 @@ version: "2"
 
 services:
 
-  tests:
+  dev:
     build: .
     volumes:
       - .:/code
     working_dir: /code
-    command: sh -c 'composer install -n && php ./vendor/bin/phpunit'
+    command: composer ci
     tty: true
     stdin_open: true
     links:
@@ -27,7 +27,7 @@ services:
     volumes:
       - .:/code
     working_dir: /code
-    command: sh -c 'composer install -n && ./vendor/bin/phpcs --standard=psr2 --ignore=vendor --ignore=docs -n . && php ./vendor/bin/phpunit && ./vendor/bin/test-reporter'
+    command: sh -c 'composer ci &&  composer test-reporter'
     tty: true
     stdin_open: true
     links:

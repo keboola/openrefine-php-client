@@ -9,13 +9,35 @@ before_script:
 script: docker-compose run --rm tests-coverage-report
 after_success:
   - docker images
-deploy:
-  provider: script
-  skip_cleanup: true
-  script: ./scripts/deploy-script.sh
-  on:
-    tags: true
+
+
 notifications:
   email: false
   slack:
     secure: I0EhY0oS2uIvi+rThWw8in3OOXgjF0Z4154Y3p103OLGwExlFP28I2l5UYA6BH0P6gK54NItFKGuu3XJHzIEpUxMQGfiGzOQ8IC3yaKOYyGtFUkW/J65XY2SWXd28HBvsBV3s7+qvqUyIuJH3iu5lKSmJ5koZbJWO7NDupYRNQIca8MsQojJR0dicOcHqs3mLQWncJ70qIq3Behm4Es6vRPSg6R6kVAYMo3aX4Um3n8Rs6yO27tNyWspHFSoReh9RSCRLXLWsTFOO5h+HLZxFo7Dqsb4Ctf3rx91g/RUCq1KJjoBz77QDYt4GxdejooQoF00lPwcF4YBIkUr1UEz4LJYMJ/nxN5iVuKc0Ib1+xckz4uKOEEI+wnyXpqiK+Ejd1pkJKi/QEWqaFaDUtc1cGMxhI88Bm38cekfVkHPoAzO7b1KPXJN1Kc5rGktj9awtbzQn1UH95egCNI1xtgiT6sy9VaxVGUIRemz8XHsFhjOxwMUw81iLvUYdEODXAqMcNAxI4UVst6LbghXQVAbBntHPPY6IeQJdcAIsChIn2F7tkeqZcrwQYpDYlEmUt8QAjGoQUWMPO8LnzECK2xik3X8alxnouipFWuNSYvwZ1aILETmu/09KT9CnEaaKyyjnu+uMyDDSR6AXepk7lw76ZtnvBVcKff2cuUeYOqhDiw=
+
+jobs:
+  include:
+    - stage: docs
+      before_script:
+      - curl -O http://get.sensiolabs.org/sami.phar
+      script:
+      - git fetch origin master:master
+      - git fetch origin --tags
+      - php sami.phar update --force .sami-config.php
+      deploy:
+        provider: pages
+        skip-cleanup: true
+        local-dir: docs
+        github-token:
+          secure: "UBOdXc+jgB6zPe54ASpL5rVPMLvx9Y2dkuTkexLdUcT+8YyMJ7pilJLONABnOIFTt9zTq/kS09FvNsDT00qveHhz2GQrItQuZSptvrBrTAkrIvc8NmJdxBiQkb8HtOSwQjgZz5gd/eXpOwAXFnpkq/uWHArzqiDcQHLP3f91qjALdyGxcU7dX0tZy1CHXiFQmIC5bXkT4XHZt50GcDrdnKkylEzIBDVPGMBLinKdH9ZUr28Q+6rBTHt2M95gnaWBye9G45rKDe88QlDkdIvaM/s7p7l32Rg23faYf5ltkDdW/Blj7w2jHexE9GXDhXdsegK2gjTyKnFYu4wvl3Dyly7mk0DylkTPt9i5xNYIRekdxZ4tuKIJfUCd/ytW0/+rHOrEj8P5vHIoytyh9AC3zzoML8LhDBKHI72nNXrxXm3SqzGMaPln6TIqWdoN8Mj5STDir7OipYz+IjwIFmIlNVMEioo0PsuTrnrz32fdvVH1KEX7iMC5sBodKxopKzpL9XfiSA1vTTyi1PPw88tZ7svQTL9/3XTzqxi9HfsdIGJeH24EMJ3vjYwBKmXHDRKDMe5Wcpiv3bC3lRH/pabZvA7JUvSeBqgGeMyrNXrgvuZ6TUn9NC4OomxoZo/c1ikdsRUA4WEwaJ8EDTfrSbQoAxA0BO6quGqjSXFVG3RUmcI="
+        on:
+          branch: master
+
+stages:
+  - test
+  - docs
+
+cache:
+  directories:
+  - vendor
