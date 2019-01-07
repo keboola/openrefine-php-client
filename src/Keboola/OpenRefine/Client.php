@@ -43,7 +43,7 @@ class Client
 
     /**
      * @param CsvFile $file
-     * @param $name
+     * @param string $name
      * @return string
      * @throws Exception
      */
@@ -72,7 +72,8 @@ class Client
                 ]
             );
         } catch (ServerException $e) {
-            if ($e->getResponse()->getReasonPhrase() == 'GC overhead limit exceeded') {
+            $response = $e->getResponse();
+            if ($response && $response->getReasonPhrase() == 'GC overhead limit exceeded') {
                 throw new Exception("OpenRefine is out of memory. Data set too large.");
             }
             throw $e;
@@ -87,8 +88,8 @@ class Client
     }
 
     /**
-     * @param $projectId
-     * @param $operations
+     * @param string $projectId
+     * @param array $operations
      * @throws Exception
      */
     public function applyOperations($projectId, $operations)
@@ -105,7 +106,8 @@ class Client
                 ]
             );
         } catch (ServerException $e) {
-            if ($e->getResponse()->getReasonPhrase() == 'GC overhead limit exceeded') {
+            $response = $e->getResponse();
+            if ($response && $response->getReasonPhrase() == 'GC overhead limit exceeded') {
                 throw new Exception("OpenRefine is out of memory. Data set too large.");
             }
             throw $e;
@@ -121,7 +123,7 @@ class Client
     }
 
     /**
-     * @param $projectId
+     * @param string $projectId
      * @return CsvFile
      * @throws Exception
      */
@@ -139,6 +141,9 @@ class Client
 
         $fileName = $this->temp->createFile("data.csv", true)->getPathname();
         $handle = fopen($fileName, "w");
+        if (!$handle) {
+            throw new Exception("Cannot open file " . $fileName . " for writing.");
+        }
         $buffer = $response->getBody()->read(1000);
         while ($buffer != '') {
             fwrite($handle, $buffer);
@@ -149,7 +154,7 @@ class Client
     }
 
     /**
-     * @param $projectId
+     * @param string $projectId
      * @return mixed
      * @throws Exception
      */
@@ -164,7 +169,7 @@ class Client
     }
 
     /**
-     * @param $projectId
+     * @param string $projectId
      * @throws Exception
      */
     public function deleteProject($projectId)
