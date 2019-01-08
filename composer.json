@@ -15,7 +15,7 @@
     "codeclimate/php-test-reporter": "dev-master",
     "symfony/finder": "^4.2",
     "jakub-onderka/php-parallel-lint": "^1.0",
-    "phpstan/phpstan": "^0.10.7"
+    "phpstan/phpstan-shim": "^0.10.8"
   },
   "autoload": {
     "psr-4": {
