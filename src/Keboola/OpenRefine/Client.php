@@ -1,10 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ondra
- * Date: 21/09/16
- * Time: 16:45
- */
+
+declare(strict_types=1);
 
 namespace Keboola\OpenRefine;
 
@@ -19,6 +15,7 @@ class Client
      * @var \GuzzleHttp\Client
      */
     protected $client;
+
     /**
      * @var Temp
      */
@@ -28,13 +25,13 @@ class Client
      * Client constructor.
      *
      * @param string $host
-     * @param int $port
+     * @param string $port
      * @param Temp|null $temp
      */
-    public function __construct($host = "localhost", $port = 3333, $temp = null)
+    public function __construct(string $host = "localhost", string $port = "3333", ?Temp $temp = null)
     {
         $this->client = new \GuzzleHttp\Client([
-            "base_uri" => "http://" . $host . ":" . $port . "/command/core/"
+            "base_uri" => "http://" . $host . ":" . $port . "/command/core/",
         ]);
         if (!$temp) {
             $temp = new Temp();
@@ -42,13 +39,7 @@ class Client
         $this->temp = $temp;
     }
 
-    /**
-     * @param CsvFile $file
-     * @param string $name
-     * @return string
-     * @throws Exception
-     */
-    public function createProject(CsvFile $file, $name)
+    public function createProject(CsvFile $file, string $name): string
     {
         if ($file->getColumnsCount() === 0) {
             throw new Exception("Empty file");
@@ -66,15 +57,15 @@ class Client
                         ],
                         [
                             "name" => "project-name",
-                            "contents" => $name
-                        ]
+                            "contents" => $name,
+                        ],
                     ],
-                    "allow_redirects" => false
+                    "allow_redirects" => false,
                 ]
             );
         } catch (ServerException $e) {
             $response = $e->getResponse();
-            if ($response && $response->getReasonPhrase() == 'GC overhead limit exceeded') {
+            if ($response && $response->getReasonPhrase() === 'GC overhead limit exceeded') {
                 throw new Exception("OpenRefine is out of memory. Data set too large.");
             }
             throw $e;
@@ -93,7 +84,7 @@ class Client
      * @param array $operations
      * @throws Exception
      */
-    public function applyOperations($projectId, $operations)
+    public function applyOperations(string $projectId, array $operations): void
     {
         try {
             $response = $this->client->request(
@@ -102,13 +93,13 @@ class Client
                 [
                     "form_params" => [
                         "project" => $projectId,
-                        "operations" => json_encode($operations)
-                    ]
+                        "operations" => json_encode($operations),
+                    ],
                 ]
             );
         } catch (ServerException $e) {
             $response = $e->getResponse();
-            if ($response && $response->getReasonPhrase() == 'GC overhead limit exceeded') {
+            if ($response && $response->getReasonPhrase() === 'GC overhead limit exceeded') {
                 throw new Exception("OpenRefine is out of memory. Data set too large.");
             }
             throw $e;
@@ -123,18 +114,13 @@ class Client
         }
     }
 
-    /**
-     * @param string $projectId
-     * @return CsvFile
-     * @throws Exception
-     */
-    public function exportRowsToCsv($projectId)
+    public function exportRowsToCsv(string $projectId): CsvFile
     {
         $response = $this->client->request("POST", "export-rows", [
             "form_params" => [
                 "project" => $projectId,
-                "format" => "csv"
-            ]
+                "format" => "csv",
+            ],
         ]);
         if ($response->getStatusCode() !== 200) {
             throw new Exception("Cannot export rows: ({$response->getStatusCode()}) {$response->getBody()}");
@@ -146,7 +132,7 @@ class Client
             throw new Exception("Cannot open file " . $fileName . " for writing.");
         }
         $buffer = $response->getBody()->read(1000);
-        while ($buffer != '') {
+        while ($buffer !== '') {
             fwrite($handle, $buffer);
             $buffer = $response->getBody()->read(1000);
         }
@@ -159,7 +145,7 @@ class Client
      * @return mixed
      * @throws Exception
      */
-    public function getProjectMetadata($projectId)
+    public function getProjectMetadata(string $projectId)
     {
         $response = $this->client->request("GET", "get-project-metadata?project={$projectId}");
         if ($this->isResponseError($response)) {
@@ -169,16 +155,12 @@ class Client
         return $decodedResponse;
     }
 
-    /**
-     * @param string $projectId
-     * @throws Exception
-     */
-    public function deleteProject($projectId)
+    public function deleteProject(string $projectId): void
     {
         $response = $this->client->request("POST", "delete-project", [
             "form_params" => [
-                "project" => $projectId
-            ]
+                "project" => $projectId,
+            ],
         ]);
 
         if ($response->getStatusCode() !== 200) {
@@ -190,15 +172,11 @@ class Client
         }
     }
 
-    /**
-     * @param Response $response
-     * @return bool
-     */
-    protected function isResponseError(Response $response)
+    protected function isResponseError(Response $response): bool
     {
         $decodedResponse = json_decode($response->getBody()->__toString(), true);
-        if (isset($decodedResponse["status"]) && $decodedResponse["status"] == "error" ||
-            isset($decodedResponse["code"]) && $decodedResponse["code"] == "error"
+        if (isset($decodedResponse["status"]) && $decodedResponse["status"] === "error" ||
+            isset($decodedResponse["code"]) && $decodedResponse["code"] === "error"
         ) {
             return true;
         }
