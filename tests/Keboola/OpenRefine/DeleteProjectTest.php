@@ -1,10 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ondra
- * Date: 21/09/16
- * Time: 17:22
- */
+
+declare(strict_types=1);
 
 namespace Keboola\OpenRefine;
 
@@ -13,7 +9,7 @@ use Keboola\Temp\Temp;
 
 class DeleteProjectTest extends \PHPUnit_Framework_TestCase
 {
-    public function testDeleteProjectSuccess()
+    public function testDeleteProjectSuccess(): void
     {
         $client = new Client(getenv("OPENREFINE_HOST"), getenv("OPENREFINE_PORT"));
         $temp = new Temp();

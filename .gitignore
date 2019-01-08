@@ -3,3 +3,5 @@ vendor/
 build/
 composer.lock
 docs/
+./sami.phar
+cache/

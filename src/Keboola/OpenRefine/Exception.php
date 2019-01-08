@@ -1,10 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ondra
- * Date: 21/09/16
- * Time: 18:03
- */
+
+declare(strict_types=1);
 
 namespace Keboola\OpenRefine;
 

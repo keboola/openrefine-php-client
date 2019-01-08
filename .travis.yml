@@ -1,21 +1,44 @@
 sudo: required
-language: bash
+
+language: php
+
+php:
+  - 7.3
+  - 7.2
+  - 7.1
+
 services:
   - docker
+
 before_script:
   - docker -v
   - docker-compose -v
+  - composer install
+script:
   - docker-compose build
-script: docker-compose run --rm tests-coverage-report
-after_success:
-  - docker images
-deploy:
-  provider: script
-  skip_cleanup: true
-  script: ./scripts/deploy-script.sh
-  on:
-    tags: true
+  - docker-compose run wait
+  - composer ci
+  - docker-compose run --rm tests-coverage-report
+
 notifications:
   email: false
   slack:
     secure: I0EhY0oS2uIvi+rThWw8in3OOXgjF0Z4154Y3p103OLGwExlFP28I2l5UYA6BH0P6gK54NItFKGuu3XJHzIEpUxMQGfiGzOQ8IC3yaKOYyGtFUkW/J65XY2SWXd28HBvsBV3s7+qvqUyIuJH3iu5lKSmJ5koZbJWO7NDupYRNQIca8MsQojJR0dicOcHqs3mLQWncJ70qIq3Behm4Es6vRPSg6R6kVAYMo3aX4Um3n8Rs6yO27tNyWspHFSoReh9RSCRLXLWsTFOO5h+HLZxFo7Dqsb4Ctf3rx91g/RUCq1KJjoBz77QDYt4GxdejooQoF00lPwcF4YBIkUr1UEz4LJYMJ/nxN5iVuKc0Ib1+xckz4uKOEEI+wnyXpqiK+Ejd1pkJKi/QEWqaFaDUtc1cGMxhI88Bm38cekfVkHPoAzO7b1KPXJN1Kc5rGktj9awtbzQn1UH95egCNI1xtgiT6sy9VaxVGUIRemz8XHsFhjOxwMUw81iLvUYdEODXAqMcNAxI4UVst6LbghXQVAbBntHPPY6IeQJdcAIsChIn2F7tkeqZcrwQYpDYlEmUt8QAjGoQUWMPO8LnzECK2xik3X8alxnouipFWuNSYvwZ1aILETmu/09KT9CnEaaKyyjnu+uMyDDSR6AXepk7lw76ZtnvBVcKff2cuUeYOqhDiw=
+
+jobs:
+  include:
+    - stage: docs
+      script:
+      - docker run -it --volume $(pwd)/:/code --rm php:7-cli sh -c '/code/scripts/generate-docs.sh'
+      deploy:
+        provider: pages
+        skip-cleanup: true
+        local-dir: docs
+        github-token:
+          secure: "JSZG3mWGlMUztj4pg/jfm/JRJKKRzBEL2hgFomsrRgr9jx0FxerPJctvUYAOJW93EaPvAJ6jQ4zttMYmzGkrwLvl4WuHZF5apFni273feNQsIIYGYz+kwpfw1eVlobTTopNInKDI3EqllqlphDNIgIyG9+en5X1n3HQHKZIpo4frQR915R/gBuRKGIMYhX4EOYoh9PePVxss5blzMnyZWX2ou7KTZE9SzcAU4LYBMYUGi4+GcNnDbTmGoWXWUKdktzE9tyiJZvpwKWIu5Qgquih/UGBrZUfpl2zNhJn7osPazMbJoUmZYUztMXojMponOL/VE96pyHtcIx2l73J37POjVBSbIgcm6dof1CeSa285eXuEBPxRA2+zI4ffqCNzj1EzPACQrribJamWjw/Cu9WqTxhpK5TO6Uhj8f8wMQa0C4VkjJahtpdCdulh2JbZL/S6lnCj/FsWRM9AB3lTcgIyag5c4ZCJA6+8SrCvHZ9f5bqltbL8bXLQPuoWh+hxgvqfSuHtt+ikJfQn5LiImWNJqGOvfNKNvLJ2UVMJHBuprTCCoOrfb3u7pjEERLaCW77QOePuHLR8P0lutoVTLRMuwGMMe9XZipIwzklx54wiL4Mwsgm40CPYrN7b+ThKFK6vD2ze4GffSfaClTwlTCU6DCFvPXLtGpuyunWmnpo="
+        on:
+          branch: master
+
+stages:
+  - test
+  - docs

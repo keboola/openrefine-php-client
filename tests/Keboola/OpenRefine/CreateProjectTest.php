@@ -1,10 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ondra
- * Date: 21/09/16
- * Time: 17:22
- */
+
+declare(strict_types=1);
 
 namespace Keboola\OpenRefine;
 
@@ -13,7 +9,7 @@ use Keboola\Temp\Temp;
 
 class CreateProjectTest extends \PHPUnit_Framework_TestCase
 {
-    public function testCreateProjectSuccess()
+    public function testCreateProjectSuccess(): void
     {
         $client = new Client(getenv("OPENREFINE_HOST"), getenv("OPENREFINE_PORT"));
         $temp = new Temp();
@@ -30,7 +26,7 @@ class CreateProjectTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("col1,col2\nA,B\n", file_get_contents($outCsv->getPathname()));
     }
 
-    public function testsCreateProjectEmptyFile()
+    public function testsCreateProjectEmptyFile(): void
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage("Empty file");
