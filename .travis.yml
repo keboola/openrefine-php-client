@@ -16,8 +16,7 @@ before_script:
   - composer install
 script:
   - docker-compose build
-  - docker-compose up -d openrefine
-  - sleep 5
+  - docker-compose run wait
   - composer ci
   - docker-compose run --rm tests-coverage-report
 

@@ -36,3 +36,11 @@ services:
       - OPENREFINE_HOST=openrefine
       - OPENREFINE_PORT=3333
       - CODECLIMATE_REPO_TOKEN
+
+  wait:
+    image: waisbrot/wait
+    depends_on:
+      - openrefine
+    environment:
+      - TARGETS=openrefine:3333
+      - TIMEOUT=120
