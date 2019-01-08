@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 apt-get update
 apt-get install -y git
@@ -10,5 +11,5 @@ git fetch origin master:master
 git fetch origin --tags
 cp -r /code /sami/code
 cd /sami/code
-php /sami/sami.phar update -vvv --force /sami/code/.sami-config.php
+php /sami/sami.phar update -vvv --force /sami/code/.sami-config.php || true
 mv /sami/code/docs /code/docs
