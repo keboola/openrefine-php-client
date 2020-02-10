@@ -24,7 +24,7 @@ class Client
     /**
      * the CSRF token
      *
-     * @var string
+     * @var null|string
      */
     protected $csrfToken;
 
@@ -239,7 +239,7 @@ class Client
      *
      * @return string
      */
-    protected function getVersion(): string
+    protected function getVersion(): ?string
     {
         if (is_null(self::$version)) {
             $this->setVersion();
@@ -295,9 +295,9 @@ class Client
      *
      * @param string $endpoint
      * @param array $params
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return \GuzzleHttp\Psr7\Response
      */
-    protected function post(string $endpoint, array $params = []): \Psr\Http\Message\ResponseInterface
+    protected function post(string $endpoint, array $params = []): \GuzzleHttp\Psr7\Response
     {
         if (version_compare(self::getVersion(), self::MIN_VERSION_FOR_CSRF, '>=')) {
             $this->csrfToken = $this->getCsrfToken();
