@@ -33,12 +33,12 @@ class Client
      *
      * @var null|string
      */
-    static private $version = null;
+    private static $version = null;
 
     /**
      * Minimum version of OpenRefine for which the CSRF token must be used
      */
-    const MIN_VERSION_FOR_CSRF = '3.3';
+    protected const MIN_VERSION_FOR_CSRF = '3.3';
 
     /**
      * Client constructor.
@@ -47,10 +47,10 @@ class Client
      * @param string $port
      * @param Temp|null $temp
      */
-    public function __construct(string $host = "localhost", string $port = "3333", ?Temp $temp = null)
+    public function __construct(string $host = 'localhost', string $port = '3333', ?Temp $temp = null)
     {
         $this->client = new \GuzzleHttp\Client([
-            "base_uri" => "http://" . $host . ":" . $port . "/command/core/",
+            'base_uri' => 'http://' . $host . ':' . $port . '/command/core/',
         ]);
         if (!$temp) {
             $temp = new Temp();
@@ -61,39 +61,39 @@ class Client
     public function createProject(CsvFile $file, string $name): string
     {
         if ($file->getColumnsCount() === 0) {
-            throw new Exception("Empty file");
+            throw new Exception('Empty file');
         }
 
         try {
             $response = $this->post(
-                "create-project-from-upload",
+                'create-project-from-upload',
                 [
-                    "multipart" => [
+                    'multipart' => [
                         [
-                            "name" => "project-file",
-                            "contents" => fopen($file->getPathname(), "r"),
+                            'name' => 'project-file',
+                            'contents' => fopen($file->getPathname(), 'r'),
                         ],
                         [
-                            "name" => "project-name",
-                            "contents" => $name,
+                            'name' => 'project-name',
+                            'contents' => $name,
                         ],
                     ],
-                    "allow_redirects" => false,
+                    'allow_redirects' => false,
                 ]
             );
         } catch (ServerException $e) {
             $response = $e->getResponse();
             if ($response && $response->getReasonPhrase() === 'GC overhead limit exceeded') {
-                throw new Exception("OpenRefine is out of memory. Data set too large.");
+                throw new Exception('OpenRefine is out of memory. Data set too large.');
             }
             throw $e;
         }
 
         if ($response->getStatusCode() !== 302) {
-            throw new Exception("Cannot create project: {$response->getStatusCode()}");
+            throw new Exception('Cannot create project: {$response->getStatusCode()}');
         }
-        $url = $response->getHeader("Location")[0];
-        $projectId = substr($url, strrpos($url, "=") + 1);
+        $url = $response->getHeader('Location')[0];
+        $projectId = substr($url, strrpos($url, '=') + 1);
         return $projectId;
     }
 
@@ -106,47 +106,47 @@ class Client
     {
         try {
             $response = $this->post(
-                "apply-operations",
+                'apply-operations',
                 [
-                    "form_params" => [
-                        "project" => $projectId,
-                        "operations" => json_encode($operations),
+                    'form_params' => [
+                        'project' => $projectId,
+                        'operations' => json_encode($operations),
                     ],
                 ]
             );
         } catch (ServerException $e) {
             $response = $e->getResponse();
             if ($response && $response->getReasonPhrase() === 'GC overhead limit exceeded') {
-                throw new Exception("OpenRefine is out of memory. Data set too large.");
+                throw new Exception('OpenRefine is out of memory. Data set too large.');
             }
             throw $e;
         }
 
         if ($response->getStatusCode() !== 200) {
             // Actually never managed to get here
-            throw new Exception("Cannot apply operations: ({$response->getStatusCode()}) {$response->getBody()}");
+            throw new Exception('Cannot apply operations: ({$response->getStatusCode()}) {$response->getBody()}');
         }
         if ($this->isResponseError($response)) {
-            throw new Exception("Cannot apply operations: {$this->getResponseError($response)}");
+            throw new Exception('Cannot apply operations: {$this->getResponseError($response)}');
         }
     }
 
     public function exportRowsToCsv(string $projectId): CsvFile
     {
-        $response = $this->post("export-rows", [
-            "form_params" => [
-                "project" => $projectId,
-                "format" => "csv",
+        $response = $this->post('export-rows', [
+            'form_params' => [
+                'project' => $projectId,
+                'format' => 'csv',
             ],
         ]);
         if ($response->getStatusCode() !== 200) {
-            throw new Exception("Cannot export rows: ({$response->getStatusCode()}) {$response->getBody()}");
+            throw new Exception('Cannot export rows: ({$response->getStatusCode()}) {$response->getBody()}');
         }
 
-        $fileName = $this->temp->createFile("data.csv", true)->getPathname();
-        $handle = fopen($fileName, "w");
+        $fileName = $this->temp->createFile('data.csv', true)->getPathname();
+        $handle = fopen($fileName, 'w');
         if (!$handle) {
-            throw new Exception("Cannot open file " . $fileName . " for writing.");
+            throw new Exception('Cannot open file ' . $fileName . ' for writing.');
         }
         $buffer = $response->getBody()->read(1000);
         while ($buffer !== '') {
@@ -164,9 +164,9 @@ class Client
      */
     public function getProjectMetadata(string $projectId)
     {
-        $response = $this->client->request("GET", "get-project-metadata?project={$projectId}");
+        $response = $this->client->request('GET', 'get-project-metadata?project={$projectId}');
         if ($this->isResponseError($response)) {
-            throw new Exception("Project not found: {$this->getResponseError($response)}");
+            throw new Exception('Project not found: {$this->getResponseError($response)}');
         }
         $decodedResponse = json_decode($response->getBody()->__toString(), true);
         return $decodedResponse;
@@ -174,26 +174,26 @@ class Client
 
     public function deleteProject(string $projectId): void
     {
-        $response = $this->post("delete-project", [
-            "form_params" => [
-                "project" => $projectId,
+        $response = $this->post('delete-project', [
+            'form_params' => [
+                'project' => $projectId,
             ],
         ]);
 
         if ($response->getStatusCode() !== 200) {
             // Actually never managed to get here
-            throw new Exception("Cannot delete project: ({$response->getStatusCode()}) {$response->getBody()}");
+            throw new Exception('Cannot delete project: ({$response->getStatusCode()}) {$response->getBody()}');
         }
         if ($this->isResponseError($response)) {
-            throw new Exception("Cannot delete project: {$this->getResponseError($response)}");
+            throw new Exception('Cannot delete project: {$this->getResponseError($response)}');
         }
     }
 
     protected function isResponseError(Response $response): bool
     {
         $decodedResponse = json_decode($response->getBody()->__toString(), true);
-        if (isset($decodedResponse["status"]) && $decodedResponse["status"] === "error" ||
-            isset($decodedResponse["code"]) && $decodedResponse["code"] === "error"
+        if (isset($decodedResponse['status']) && $decodedResponse['status'] === 'error' ||
+            isset($decodedResponse['code']) && $decodedResponse['code'] === 'error'
         ) {
             return true;
         }
@@ -207,11 +207,11 @@ class Client
     protected function getResponseError(Response $response)
     {
         $decodedResponse = json_decode($response->getBody()->__toString(), true);
-        if (isset($decodedResponse["status"])) {
-            return $decodedResponse["status"];
+        if (isset($decodedResponse['status'])) {
+            return $decodedResponse['status'];
         }
-        if (isset($decodedResponse["code"])) {
-            return $decodedResponse["code"];
+        if (isset($decodedResponse['code'])) {
+            return $decodedResponse['code'];
         }
     }
 
@@ -223,12 +223,12 @@ class Client
     private function setVersion(): void
     {
         if (is_null(self::$version)) {
-            self::$version = "0.0";
-            $response = $this->client->request("GET", "get-version");
+            self::$version = '0.0';
+            $response = $this->client->request('GET', 'get-version');
             if (!$this->isResponseError($response)) {
                 $decodedResponse = json_decode($response->getBody()->__toString(), true);
-                if (array_key_exists("version", $decodedResponse)) {
-                    self::$version = $decodedResponse["version"];
+                if (array_key_exists('version', $decodedResponse)) {
+                    self::$version = $decodedResponse['version'];
                 }
             }
         }
@@ -241,7 +241,9 @@ class Client
      */
     protected function getVersion(): string
     {
-        if (is_null(self::$version)) $this->setVersion();
+        if (is_null(self::$version)) {
+            $this->setVersion();
+        }
         return self::$version;
     }
 
@@ -255,7 +257,7 @@ class Client
         try {
             $this->setCsrfToken();
         } catch (Exception $e) {
-            $this->csrfToken = "";
+            $this->csrfToken = '';
         }
         return $this->csrfToken;
     }
@@ -267,18 +269,20 @@ class Client
      */
     protected function setCsrfToken(): void
     {
-        $token = "";
+        $token = '';
         $error = false;
         if (is_null($this->csrfToken) && version_compare(self::getVersion(), self::MIN_VERSION_FOR_CSRF, '>=')) {
-            $response = $this->client->request("GET", "get-csrf-token");
+            $response = $this->client->request('GET', 'get-csrf-token');
             if (!$this->isResponseError($response)) {
                 $decodedResponse = json_decode($response->getBody()->__toString(), true);
-                if (array_key_exists("token", $decodedResponse)) $token = $decodedResponse["token"];
+                if (array_key_exists('token', $decodedResponse)) {
+                    $token = $decodedResponse['token'];
+                }
                 else $error = true;
             } else $error = true;
         }
         if ($error) {
-            throw new Exception("Cannot GET the CSRF token");
+            throw new Exception('Cannot GET the CSRF token');
         }
         $this->csrfToken = $token;
     }
@@ -294,23 +298,23 @@ class Client
     {
         if (version_compare(self::getVersion(), self::MIN_VERSION_FOR_CSRF, '>=')) {
             $this->csrfToken = $this->getCsrfToken();
-            if ($this->csrfToken !== "") {
-                if (stristr($endpoint,"create") !== false) {
+            if ($this->csrfToken !== '') {
+                if (stristr($endpoint, 'create') !== false) {
                     $endpoint .= '?csrf_token='.$this->csrfToken;
                 } else if (array_key_exists('multipart', $params)) {
-                    array_push($params['multipart'],[
-                        'name' => "csrf_token",
-                        'contents' => $this->csrfToken
+                    array_push($params['multipart'], [
+                        'name' => 'csrf_token',
+                        'contents' => $this->csrfToken,
                     ]);
                 } else if (array_key_exists('form_params', $params)) {
                     $params['form_params']['csrf_token'] = $this->csrfToken;
                 } else {
-                    $params["csrf_token"] = $this->csrfToken;
+                    $params['csrf_token'] = $this->csrfToken;
                 }
             }
             // The CSRF token is a one timer, forget it to get a new one
             $this->csrfToken = null;
         }
-        return $this->client->request("POST", $endpoint, $params);
+        return $this->client->request('POST', $endpoint, $params);
     }
 }
