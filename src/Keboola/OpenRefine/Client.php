@@ -8,6 +8,7 @@ use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Response;
 use Keboola\Csv\CsvFile;
 use Keboola\Temp\Temp;
+use Psr\Http\Message\ResponseInterface;
 
 class Client
 {
@@ -189,7 +190,7 @@ class Client
         }
     }
 
-    protected function isResponseError(Response $response): bool
+    protected function isResponseError(ResponseInterface $response): bool
     {
         $decodedResponse = json_decode($response->getBody()->__toString(), true);
         if (isset($decodedResponse['status']) && $decodedResponse['status'] === 'error' ||
@@ -237,7 +238,7 @@ class Client
     /**
      * Gets the OpenRefine version
      *
-     * @return string
+     * @return string|null
      */
     protected function getVersion(): ?string
     {
@@ -250,9 +251,9 @@ class Client
     /**
      * Gets the CSRF token
      *
-     * @return string
+     * @return string|null
      */
-    protected function getCsrfToken(): string
+    protected function getCsrfToken(): ?string
     {
         try {
             $this->setCsrfToken();
@@ -271,7 +272,8 @@ class Client
     {
         $token = '';
         $error = false;
-        if (is_null($this->csrfToken) && version_compare(self::getVersion(), self::MIN_VERSION_FOR_CSRF, '>=')) {
+        $version = is_null(self::getVersion()) ? '0.0' : self::getVersion();
+        if (is_null($this->csrfToken) && version_compare($version, self::MIN_VERSION_FOR_CSRF, '>=')) {
             $response = $this->client->request('GET', 'get-csrf-token');
             if (!$this->isResponseError($response)) {
                 $decodedResponse = json_decode($response->getBody()->__toString(), true);
@@ -295,11 +297,12 @@ class Client
      *
      * @param string $endpoint
      * @param array $params
-     * @return \GuzzleHttp\Psr7\Response
+     * @return ResponseInterface
      */
-    protected function post(string $endpoint, array $params = []): \GuzzleHttp\Psr7\Response
+    protected function post(string $endpoint, array $params = []): ResponseInterface
     {
-        if (version_compare(self::getVersion(), self::MIN_VERSION_FOR_CSRF, '>=')) {
+        $version = is_null(self::getVersion()) ? '0.0' : self::getVersion();
+        if (version_compare($version, self::MIN_VERSION_FOR_CSRF, '>=')) {
             $this->csrfToken = $this->getCsrfToken();
             if ($this->csrfToken !== '') {
                 if (stristr($endpoint, 'create') !== false) {
