@@ -277,9 +277,12 @@ class Client
                 $decodedResponse = json_decode($response->getBody()->__toString(), true);
                 if (array_key_exists('token', $decodedResponse)) {
                     $token = $decodedResponse['token'];
+                } else {
+                    $error = true;
                 }
-                else $error = true;
-            } else $error = true;
+            } else {
+                $error = true;
+            }
         }
         if ($error) {
             throw new Exception('Cannot GET the CSRF token');
