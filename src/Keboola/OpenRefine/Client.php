@@ -91,7 +91,7 @@ class Client
         }
 
         if ($response->getStatusCode() !== 302) {
-            throw new Exception('Cannot create project: {$response->getStatusCode()}');
+            throw new Exception("Cannot create project: {$response->getStatusCode()}");
         }
         $url = $response->getHeader('Location')[0];
         $projectId = substr($url, strrpos($url, '=') + 1);
@@ -125,10 +125,10 @@ class Client
 
         if ($response->getStatusCode() !== 200) {
             // Actually never managed to get here
-            throw new Exception('Cannot apply operations: ({$response->getStatusCode()}) {$response->getBody()}');
+            throw new Exception("Cannot apply operations: ({$response->getStatusCode()}) {$response->getBody()}");
         }
         if ($this->isResponseError($response)) {
-            throw new Exception('Cannot apply operations: {$this->getResponseError($response)}');
+            throw new Exception("Cannot apply operations: {$this->getResponseError($response)}");
         }
     }
 
@@ -141,7 +141,7 @@ class Client
             ],
         ]);
         if ($response->getStatusCode() !== 200) {
-            throw new Exception('Cannot export rows: ({$response->getStatusCode()}) {$response->getBody()}');
+            throw new Exception("Cannot export rows: ({$response->getStatusCode()}) {$response->getBody()}");
         }
 
         $fileName = $this->temp->createFile('data.csv', true)->getPathname();
@@ -165,9 +165,9 @@ class Client
      */
     public function getProjectMetadata(string $projectId)
     {
-        $response = $this->client->request('GET', 'get-project-metadata?project={$projectId}');
+        $response = $this->client->request('GET', "get-project-metadata?project={$projectId}");
         if ($this->isResponseError($response)) {
-            throw new Exception('Project not found: {$this->getResponseError($response)}');
+            throw new Exception("Project not found: {$this->getResponseError($response)}");
         }
         $decodedResponse = json_decode($response->getBody()->__toString(), true);
         return $decodedResponse;
@@ -183,10 +183,10 @@ class Client
 
         if ($response->getStatusCode() !== 200) {
             // Actually never managed to get here
-            throw new Exception('Cannot delete project: ({$response->getStatusCode()}) {$response->getBody()}');
+            throw new Exception("Cannot delete project: ({$response->getStatusCode()}) {$response->getBody()}");
         }
         if ($this->isResponseError($response)) {
-            throw new Exception('Cannot delete project: {$this->getResponseError($response)}');
+            throw new Exception("Cannot delete project: {$this->getResponseError($response)}");
         }
     }
 
