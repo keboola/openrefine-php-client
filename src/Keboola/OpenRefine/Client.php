@@ -39,27 +39,34 @@ class Client
         $this->temp = $temp;
     }
 
-    public function createProject(CsvFile $file, string $name): string
+    public function createProject(CsvFile $file, string $name, array $options = []): string
     {
         if ($file->getColumnsCount() === 0) {
             throw new Exception("Empty file");
         }
 
+        $multipartData = [
+            [
+                'name' => 'project-file',
+                'contents' => fopen($file->getPathname(), 'r'),
+            ],
+            [
+                'name' => 'project-name',
+                'contents' => $name,
+            ],
+        ];
+        if (count($options) > 0) {
+            array_push($multipartData, [
+                'name' => 'options',
+                'contents' => json_encode($options),
+            ]);
+        }
         try {
             $response = $this->client->request(
                 "POST",
                 "create-project-from-upload",
                 [
-                    "multipart" => [
-                        [
-                            "name" => "project-file",
-                            "contents" => fopen($file->getPathname(), "r"),
-                        ],
-                        [
-                            "name" => "project-name",
-                            "contents" => $name,
-                        ],
-                    ],
+                    "multipart" => $multipartData,
                     "allow_redirects" => false,
                 ]
             );
