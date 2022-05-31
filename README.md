@@ -32,3 +32,7 @@ Application is prepared for run in container, you can start development same way
 ## License
 
 MIT. See [license file](LICENSE.md).
+
+## License
+
+MIT licensed, see [LICENSE](./LICENSE) file.
